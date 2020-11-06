@@ -2,10 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { pluralize } from "../../utils/helpers"
 
-import { useStoreContext } from '../../utils/GlobalState';
-import { ADD_TO_CART, UPDATE_CART_QUANTITY } from '../../utils/actions';
-
 import { idbPromise } from "../../utils/helpers";
+
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart, updateCartQuantity } from '../Cart/cartSlice';
+
 
 function ProductItem(item) {
   const {
@@ -16,32 +17,27 @@ function ProductItem(item) {
     quantity
   } = item;
 
-  const [state, dispatch] = useStoreContext();
+  const dispatch = useDispatch();
+  const cartItems = useSelector(state => state.cart.items);
 
-  const { cart } = state;
+  const addToCartClick = () => {
 
-  const addToCart = () => {
-    // find the cart item with the matching id
-    const itemInCart = cart.find((cartItem) => cartItem._id === _id);
-  
-    // if there was a match, call UPDATE with a new purchase quantity
-    if (itemInCart) {
-      dispatch({
-        type: UPDATE_CART_QUANTITY,
-        _id: _id,
-        purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1
-      });
-      idbPromise('cart', 'put', {
-        ...itemInCart,
-        purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1
-      });
-    } else {
-      dispatch({
-        type: ADD_TO_CART,
-        product: { ...item, purchaseQuantity: 1 }
-      });
-      idbPromise('cart', 'put', { ...item, purchaseQuantity: 1 });
-    }
+      const itemInCart = cartItems.find((cartItem) => cartItem._id === _id);
+
+      if (itemInCart) {
+        dispatch(updateCartQuantity({
+                _id: _id, 
+                purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1}));
+        idbPromise('cart', 'put', {
+                 ...itemInCart,
+                 purchaseQuantity: parseInt(itemInCart.purchaseQuantity) + 1
+               });
+      }
+      else{
+        dispatch(addToCart({ ...item, purchaseQuantity: 1}));
+        idbPromise('cart', 'put', { ...item, purchaseQuantity: 1 });
+      }
+
   };
 
   return (
@@ -57,7 +53,7 @@ function ProductItem(item) {
         <div>{quantity} {pluralize("item", quantity)} in stock</div>
         <span>${price}</span>
       </div>
-      <button onClick={addToCart}>Add to cart</button>
+      <button onClick={addToCartClick}>Add to cart</button>
     </div>
   );
 }
