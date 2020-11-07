@@ -1,43 +1,65 @@
 import React, { useEffect } from "react";
 import { useQuery } from '@apollo/react-hooks';
 import { QUERY_CATEGORIES } from "../../utils/queries";
-import { UPDATE_CATEGORIES, UPDATE_CURRENT_CATEGORY } from '../../utils/actions';
+// import { UPDATE_CATEGORIES, UPDATE_CURRENT_CATEGORY } from '../../utils/actions';
 
-import { useStoreContext } from "../../utils/GlobalState";
+// import { useStoreContext } from "../../utils/GlobalState";
 import { idbPromise } from '../../utils/helpers';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { updateCategories, updateCurrentCategory } from '../ProductList/productSlice';
+
 
 function CategoryMenu() {
 
-  const [state, dispatch] = useStoreContext();
+  //const [state, dispatch] = useStoreContext();
+  const dispatch = useDispatch();
 
-  const { categories } = state;
+  //const { categories } = state;
+  const categories = useSelector(state => state.productItems.categories);
 
   const { loading, data: categoryData } = useQuery(QUERY_CATEGORIES);
 
   useEffect(() => {
     if (categoryData) {
-      dispatch({
-        type: UPDATE_CATEGORIES,
+
+      dispatch(updateCategories({
         categories: categoryData.categories
-      });
+      }));
+
+      // dispatch({
+      //   type: UPDATE_CATEGORIES,
+      //   categories: categoryData.categories
+      // });
       categoryData.categories.forEach(category => {
         idbPromise('categories', 'put', category);
       });
     } else if (!loading) {
       idbPromise('categories', 'get').then(categories => {
-        dispatch({
-          type: UPDATE_CATEGORIES,
+
+        dispatch(updateCategories({
           categories: categories
-        });
+        }));
+  
+        // dispatch({
+        //   type: UPDATE_CATEGORIES,
+        //   categories: categories
+        // });
       });
     }
   }, [categoryData, loading, dispatch]);
 
   const handleClick = id => {
-    dispatch({
-      type: UPDATE_CURRENT_CATEGORY,
+
+    dispatch(updateCurrentCategory({
       currentCategory: id
-    });
+    }));
+
+
+    // dispatch({
+    //   type: UPDATE_CURRENT_CATEGORY,
+    //   currentCategory: id
+    // });
   };
 
   return (
