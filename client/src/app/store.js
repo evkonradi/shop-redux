@@ -5,7 +5,7 @@ import { devToolsEnhancer  } from 'redux-devtools-extension';
 
 const store = configureStore({
   reducer: {
-    products: productReducer,
+    productItems: productReducer,
     cart: cartReducer,
   }
 }, devToolsEnhancer());

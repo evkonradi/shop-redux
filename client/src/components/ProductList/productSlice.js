@@ -1,17 +1,27 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-const initialState = [];
-// const initialState = [
-//     { id: '1', title: 'First Post!', content: 'Hello!' },
-//     { id: '2', title: 'Second Post', content: 'More text' }
-//   ]
-  
+const initialState = {
+  products: [],
+  categories: [],
+  currentCategory: ''
+};
 
 const productSlice = createSlice({
-  name: 'products',
+  name: 'productItems',
   initialState,
   reducers: {
+    updateProducts(state, action) {
+      state.products= [...action.payload.products];
+    },
+    updateCategories(state, action) {
+      state.categories= [...action.payload.categories];
+    },
+    updateCurrentCategory(state, action){
+      state.currentCategory = action.payload.currentCategory;
+    }
   }
 });
+
+export const {updateProducts, updateCategories, updateCurrentCategory} = productSlice.actions
 
 export default productSlice.reducer
