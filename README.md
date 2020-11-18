@@ -1,6 +1,6 @@
 # shop-redux (with Redux Store)
 
-This project consisted of refactoring the e-commerce platform from using React’s Context API to using Redux for Global State.
+This project consisted of refactoring the e-commerce platform from using React Context API to using Redux for Global State.
 
 # Technologies used
 
